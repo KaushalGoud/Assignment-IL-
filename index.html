@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Builder</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Toolbar with draggable elements -->
+        <div class="toolbar">
+            <h2>Elements</h2>
+            <div class="element" draggable="true" data-type="text">
+                <span>Text Block</span>
+            </div>
+            <div class="element" draggable="true" data-type="button">
+                <span>Button</span>
+            </div>
+            <div class="element" draggable="true" data-type="image">
+                <span>Image</span>
+            </div>
+        </div>
+
+        <!-- Main canvas area -->
+        <div class="canvas" id="canvas">
+            <div class="template-outline">
+                <h2>Drag elements here</h2>
+            </div>
+        </div>
+
+        <!-- Properties panel -->
+        <div class="properties-panel">
+            <h2>Properties</h2>
+            <div id="no-selection">
+                <p>Select an element to edit its properties</p>
+            </div>
+            <form id="element-properties" style="display: none;">
+                <div class="form-group">
+                    <label for="content">Content:</label>
+                    <input type="text" id="content" name="content">
+                </div>
+                <div class="form-group">
+                    <label for="font-size">Font Size (px):</label>
+                    <input type="number" id="font-size" name="fontSize" min="8" max="72">
+                </div>
+                <div class="form-group">
+                    <label>Color Presets:</label>
+                    <div class="color-presets">
+                        <button type="button" class="color-preset" data-color="#007bff" style="background-color: #007bff;"></button>
+                        <button type="button" class="color-preset" data-color="#28a745" style="background-color: #28a745;"></button>
+                        <button type="button" class="color-preset" data-color="#dc3545" style="background-color: #dc3545;"></button>
+                        <button type="button" class="color-preset" data-color="#ffc107" style="background-color: #ffc107;"></button>
+                        <button type="button" class="color-preset" data-color="#17a2b8" style="background-color: #17a2b8;"></button>
+                    </div>
+                    <label for="color">Custom Color:</label>
+                    <input type="color" id="color" name="color">
+                </div>
+                <div class="form-group">
+                    <label>Background Presets:</label>
+                    <div class="color-presets">
+                        <button type="button" class="bg-preset" data-color="#ffffff" style="background-color: #ffffff; border: 1px solid #ddd;"></button>
+                        <button type="button" class="bg-preset" data-color="#f8f9fa" style="background-color: #f8f9fa;"></button>
+                        <button type="button" class="bg-preset" data-color="#e9ecef" style="background-color: #e9ecef;"></button>
+                        <button type="button" class="bg-preset" data-color="#dee2e6" style="background-color: #dee2e6;"></button>
+                        <button type="button" class="bg-preset" data-color="#f8f0fc" style="background-color: #f8f0fc;"></button>
+                    </div>
+                    <label for="background">Custom Background:</label>
+                    <input type="color" id="background" name="background">
+                </div>
+                <div class="form-group">
+                    <label for="padding">Padding (px):</label>
+                    <input type="number" id="padding" name="padding" min="0" max="100">
+                </div>
+                <div class="form-group image-url-group" style="display: none;">
+                    <label>Sample Images:</label>
+                    <div class="image-presets">
+                        <img src="https://picsum.photos/150/150?random=1" alt="Sample 1" class="image-preset">
+                        <img src="https://picsum.photos/150/150?random=2" alt="Sample 2" class="image-preset">
+                        <img src="https://picsum.photos/150/150?random=3" alt="Sample 3" class="image-preset">
+                        <img src="https://picsum.photos/150/150?random=4" alt="Sample 4" class="image-preset">
+                    </div>
+                    <label for="image-url">Custom Image URL:</label>
+                    <input type="text" id="image-url" name="imageUrl">
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 

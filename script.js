@@ -2,17 +2,92 @@
 const canvas = document.getElementById('canvas');
 const elementProperties = document.getElementById('element-properties');
 const noSelection = document.getElementById('no-selection');
+const propertiesPanel = document.querySelector('.properties-panel');
 let selectedElement = null;
+let isMobile = window.innerWidth <= 992;
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    isMobile = window.innerWidth <= 992;
+    if (selectedElement) {
+        updatePropertiesPanelVisibility(true);
+    }
+});
 
 // Initialize draggable elements
 document.querySelectorAll('.element').forEach(element => {
     element.addEventListener('dragstart', handleDragStart);
+    element.addEventListener('touchstart', handleTouchStart);
+    element.addEventListener('touchmove', handleTouchMove);
+    element.addEventListener('touchend', handleTouchEnd);
 });
 
 // Canvas event listeners
 canvas.addEventListener('dragover', handleDragOver);
 canvas.addEventListener('drop', handleDrop);
 canvas.addEventListener('click', handleCanvasClick);
+canvas.addEventListener('touchend', handleCanvasTouch);
+
+// Touch handling for draggable elements
+let touchDragging = false;
+let touchElement = null;
+let startX, startY;
+
+function handleTouchStart(e) {
+    touchDragging = true;
+    touchElement = e.target.cloneNode(true);
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    
+    // Style the clone element
+    touchElement.style.position = 'fixed';
+    touchElement.style.opacity = '0.8';
+    touchElement.style.zIndex = '1000';
+    document.body.appendChild(touchElement);
+}
+
+function handleTouchMove(e) {
+    if (!touchDragging) return;
+    e.preventDefault();
+    
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+    
+    touchElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+}
+
+function handleTouchEnd(e) {
+    if (!touchDragging) return;
+    touchDragging = false;
+    
+    const touch = e.changedTouches[0];
+    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+    
+    if (target === canvas || target.closest('.canvas')) {
+        const rect = canvas.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        createElementAtPosition(touchElement.dataset.type, x, y);
+    }
+    
+    document.body.removeChild(touchElement);
+    touchElement = null;
+}
+
+// Update properties panel visibility for mobile
+function updatePropertiesPanelVisibility(show) {
+    if (isMobile) {
+        propertiesPanel.classList.toggle('active', show);
+        if (show) {
+            propertiesPanel.style.display = 'block';
+            setTimeout(() => {
+                propertiesPanel.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+    }
+}
 
 // Handle element dragging from toolbar
 function handleDragStart(e) {
@@ -119,7 +194,6 @@ function handleElementDragEnd(e) {
 
 // Handle element selection and property updates
 function selectElement(element) {
-    // Remove selection from previously selected element
     if (selectedElement) {
         selectedElement.classList.remove('selected');
     }
@@ -127,15 +201,19 @@ function selectElement(element) {
     selectedElement = element;
     element.classList.add('selected');
     
-    // Show properties panel
+    updatePropertiesPanelVisibility(true);
     noSelection.style.display = 'none';
     elementProperties.style.display = 'block';
     
     // Update form fields
+    updateFormFields(element);
+}
+
+// Update form fields
+function updateFormFields(element) {
     const type = element.dataset.type;
     document.querySelector('.image-url-group').style.display = type === 'image' ? 'block' : 'none';
     
-    // Set current values
     document.getElementById('content').value = type === 'image' ? 
         element.querySelector('img').src : 
         element.textContent;
@@ -143,6 +221,15 @@ function selectElement(element) {
     document.getElementById('color').value = rgbToHex(getComputedStyle(element).color);
     document.getElementById('background').value = rgbToHex(getComputedStyle(element).backgroundColor);
     document.getElementById('padding').value = parseInt(getComputedStyle(element).padding) || 0;
+}
+
+// Create element at specific position
+function createElementAtPosition(type, x, y) {
+    const element = createCanvasElement(type);
+    element.style.left = `${x - element.offsetWidth / 2}px`;
+    element.style.top = `${y - element.offsetHeight / 2}px`;
+    canvas.appendChild(element);
+    selectElement(element);
 }
 
 // Handle canvas click (deselect elements)
